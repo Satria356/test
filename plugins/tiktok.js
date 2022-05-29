@@ -1,57 +1,43 @@
-let moment = require('moment-timezone')
-const { default: makeWASocket, BufferJSON, WA_DEFAULT_EPHEMERAL, generateWAMessageFromContent, downloadContentFromMessage, downloadHistory, proto, getMessage, generateWAMessageContent, prepareWAMessageMedia } = require('@adiwajshing/baileys-md')
-let fs = require('fs')
-let fetch = require('node-fetch')
-let handler = async (m, {text}) => {
-if (!text) return conn.reply(m.chat, 'Harap masukkan link\n\nContoh: .tiktok https://tiktok.com/xxxxxx', m)
-
-    let who
-    if (m.isGroup) who = m.mentionedJid[0] ? m.mentionedJid[0] : m.sender
-    else who = m.sender
-    let user = global.db.data.users[who]
-    let more = String.fromCharCode(8206)
-    let readMore = more.repeat(4001)
-let anu = `*── 「 TIKTOK 」 ──*
-
-SILAHKAN PILIH`
-     const template = generateWAMessageFromContent(m.chat, proto.Message.fromObject({
-     templateMessage: {
-         hydratedTemplate: {
-           hydratedContentText: anu,
-           locationMessage: { 
-           jpegThumbnail: fs.readFileSync('./src/welcome.jpg')}, 
-           hydratedFooterText: wm,
-           hydratedButtons: [{
-             urlButton: {
-               displayText: '📍instagram',
-               url: instagram
-               }
-               
-             },
-             {
-             quickReplyButton: {
-               displayText: 'Tanpa Watermark',
-               id: `.tiktoknowm ${text}`,
-             }
-           },
-           {
-             quickReplyButton: {
-               displayText: 'dengan watermark',
-               id: `.tiktokwm ${text}`,
-             }
-           }]
-         }
-       }
-     }), { userJid: m.sender, quoted: m });
-    //conn.reply(m.chat, text.trim(), m)
-    return await conn.relayMessage(
-         m.chat,
-         template.message,
-         { messageId: template.key.id }
-     )
+const { Tiktok } = require('xfarr-api')
+const { tiktok } = require('../lib/scrape')
+let handler = async (m, { conn, args, usedPrefix, command }) => {
+  if (!args[0]) throw `uhm.. url nya mana?\n\ncontoh:\n${usedPrefix + command} https://vt.tiktok.com/ZGJBtcsDq/`
+  if (!args[0].match(/tiktok/gi)) throw `url salah`
+  await m.reply(wait)
+  const sentMsg = await conn.reply(m.chat, `Downloading media from Tiktok`, 0, {
+  contextInfo: { mentionedJid: [m.sender],
+    externalAdReply :{
+    mediaUrl: linkig,
+    mediaType: 2,
+    description: deslink, 
+    title: titlink,
+    body: wm, //`${fileSizeH}`,
+    thumbnail: await(await fetch(img)).buffer(),
+    sourceUrl: linkgc
+     }}
+  })
+  const tt = `https://telegra.ph/file/71642ff8811e2a2cdc79d.jpg`
+  try {
+  var anu = await Tiktok(args[0])
+  var { url, title, thumbnail, duration, source, medias } = anu
+  var { quality, extension, size, formattedSize, } = anu.medias[1]
+  let cap = `🚀 *Link:* ${await(await axios.get(`https://tinyurl.com/api-create.php?url=${medias[1].url}`)).data}`
+  await conn.sendMedia(m.chat, medias[1].url, null, {caption: cap, mentions: [m.sender]})
+  } catch {
+    try {
+    var anuu = await tiktok(args[0])
+    var { nowm, wm, audio } = anuu
+    let cap = `🚀 *Link:* ${await(await axios.get(`https://tinyurl.com/api-create.php?url=${nowm}`)).data}`
+    conn.sendMedia(m.chat, nowm, 0, {caption: cap, mentions: [m.sender]})
+  } catch {
+    throw eror 
+   }
+ }
 }
-handler.help = ['tiktok'].map(v => v + ' <url>')
+handler.help = ['tiktoknowm'].map(v => v + ' <url>')
 handler.tags = ['downloader']
-handler.command = /^(tiktok)$/i
+handler.command = /^(tt|tiktok)nowm(dl)?(download(er)?)?$/i
+
 
 module.exports = handler
+
